@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quest for the Dragon's Treasure</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Basic styling for the game board */
+        table { border-collapse: collapse; margin: 20px auto; }
+        td { width: 60px; height: 60px; border: 1px solid black; text-align: center; }
+        .player { background-color: blue; color: white; }
+        .treasure { background-color: gold; }
+        .monster { background-color: red; color: white; }
+        .door { background-color: green; color: white; }
+    </style>
+</head>
+<body>
+    <!--<h1>Quest for the Dragon's Treasure</h1>-->
+    <table id="gameBoard"></table>
+    <div id="playerStats"></div>
+    <div id="gameMessages"></div>
+
+    <script>
+        // Number of rows and columns
+        const X = 5;
+        const Y = 5;
+
+        // Monster count and array to hold them
+
+        const monsterCount = 4;
+        const monsters = [];
+
+        // Game board (2D array)
+        let gameBoard = [ ...new Array(X) ].map(x => [ ...new Array(Y) ].map(y => {
+            return {
+                player: null,
+                monster: null,
+                treasure: null
+            };
+        }));
+        console.log(gameBoard)
+
+        // Player object
+        let player = {
+            x: 0, // Starting row
+            y: 0, // Starting column
+            health: 100,
+            inventory: [],
+            move: function(direction) {
+                if (direction === "left") {
+                    if (player.x > 0) {
+                        player.x--;
+                    }
+                } else if (direction === "right") {
+                    if (player.x < 4) {
+                        player.x++;
+                    }
+                } else if (direction === "up") {
+                    if (player.y > 0) {
+                        player.y--;
+                    }
+                } else if (direction === "down") {
+                    if (player.y < 4) {
+                        player.y++;
+                    }
+                } else {
+                    return;
+                }
+
+            },
+            collectTreasure: function() {
+                // Implement treasure collection
+            },
+            fighting: false,
+            attackMonster: function() {
+                // Implement monster encounter
+            }
+        };
+
+        // Function to generate a random integer from n1 up to, but no including, n2
+        function generateRandomInteger(n1, n2) {
+            return Math.floor((n2 - n1)*Math.random());
+        }
+
+        function generateRandomPosition() {
+            return [ generateRandomInteger(0, X), generateRandomInteger(0, Y) ];
+        }
+
+        // Function to generate a monster
+        function generateMonster() {
+            let x, y;
+            do {
+                [ x, y ] = generateRandomPosition();
+            } while (!(x === 0 && y === 0));
+            return {
+                x: x,
+                y: y,
+                health: 100
+            }
+        }
+
+        // Function to render the game board
+        function renderBoard() {
+            // Use DOM manipulation to display the game board
+        }
+
+        // Function to update player stats
+        function updatePlayerStats() {
+            // Display player health and inventory
+        }
+
+        // Function to handle player movement
+        function handleKeyPress(event) {
+            removeMessage();
+            if (event.key === "ArrowLeft") {
+                player.move("left")
+            } else if (event.key === "ArrowRight") {
+                player.move("right")
+            } else if (event.key === "ArrowUp") {
+                player.move("up")
+            } else if (event.key === "ArrowDown") {
+                player.move("down")
+            }
+        }
+
+        // Event listener for keypresses
+        document.addEventListener('keydown', handleKeyPress);
+
+        // Message output
+        function writeMessage(text) {
+            removeMessage();
+            const p = document.createElement("p");
+            p.innerText = text;
+            document.getElementById("gameMessages").append(p);
+        }
+
+        function removeMessage() {
+            document.getElementById("gameMessages").children[0].remove();
+        }
+
+        // Initial setup
+        renderBoard();
+        updatePlayerStats();
+    </script>
+</body>
+</html>

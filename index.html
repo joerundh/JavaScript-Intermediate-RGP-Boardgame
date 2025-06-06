@@ -27,7 +27,7 @@
             ['M', '', '', 'T', ''],
             ['', 'T', 'M', '', ''],
             ['', '', '', 'M', ''],
-            ['', 'M', '', '', 'D']
+            ['', 'M', '', '', '']
         ];
 
         // Player object
@@ -37,35 +37,119 @@
             health: 100,
             inventory: [],
             move: function(direction) {
-                // Implement movement logic
+                if (this.health > 0) {
+                    gameBoard[this.y][this.x] = "";
+                    if (direction === "left") {
+                        if (this.x > 0) {
+                            player.x--;
+                        }
+                    } else if (direction === "right") {
+                        if (this.x < 4) {
+                            player.x++;
+                        }
+                    } else if (direction === "up") {
+                        if (this.y > 0) {
+                            player.y--;
+                        }
+                    } else if (direction === "down") {
+                        if (this.y < 4) {
+                            player.y++;
+                        }
+                    }
+
+                    if (gameBoard[this.y][this.x] === "M") {
+                        this.fightMonster();
+                        updatePlayerStats();
+                    } else if (gameBoard[this.y][this.x] === "T") {
+                        this.collectTreasure();
+                        updatePlayerStats();
+                        gameBoard[this.y][this.x] = "P";
+                    } else {
+                        if (document.getElementById("gameMessages").children.length) {
+                            if (document.getElementById("gameMessages").children.length < 3) {
+                                document.getElementById("gameMessages").innerHTML = "";
+                            }
+                        }
+                        gameBoard[this.y][this.x] = "P";
+                    }
+
+                    renderBoard();
+                }
             },
             collectTreasure: function() {
-                // Implement treasure collection
+                this.inventory.push([ "treasure" ]);
+                if (this.inventory.length === 3) {
+                    writeGameMessage("You picked up all the treasures! Well done!")
+                } else {
+                    writeGameMessage("You picked up a treasure!")
+                }
             },
             fightMonster: function() {
-                // Implement monster encounter
+                this.health = 0;
+                writeGameMessage("You were killed by a monster! Game over!")
             }
         };
 
         // Function to render the game board
         function renderBoard() {
-            // Use DOM manipulation to display the game board
+            document.getElementById("gameBoard").innerHTML = "";
+            for (let i = 0; i < 5; i++) {           // Loop through the rows
+                const tableRow = document.createElement("tr");
+                for (let j = 0; j < 5; j++) {
+                    const tableCell = document.createElement("td");
+                    if (gameBoard[i][j] === "P") {
+                        tableCell.className = "player";
+                    } else if (gameBoard[i][j] === "M") {
+                        tableCell.className = "monster";
+                    } else if (gameBoard[i][j] === "T") {
+                        tableCell.className = "treasure";
+                    } else if (gameBoard[i][j] === "D") {
+                        tableCell.className = "door";
+                    }
+                    tableRow.append(tableCell);
+                }
+                document.getElementById("gameBoard").append(tableRow);
+            }
+        }
+
+        // Function to generate paragraph with a given text
+        function generateParagraph(text) {
+            const p = document.createElement("p");
+            p.innerText = text;
+            return p;
         }
 
         // Function to update player stats
         function updatePlayerStats() {
-            // Display player health and inventory
+            document.getElementById("playerStats").innerHTML = "";
+            document.getElementById("playerStats").append(generateParagraph(`Health: ${player.health}`));
+            document.getElementById("playerStats").append(generateParagraph(`Inventory: ${player.inventory.length ? player.inventory.length + " x Treasure" : "empty"}`));
+        }
+
+        // Function to write game messages
+        function writeGameMessage(text) {
+            document.getElementById("gameMessages").innerHTML = "";
+            document.getElementById("gameMessages").append(generateParagraph(text));
         }
 
         // Function to handle player movement
         function handleKeyPress(event) {
-            // Implement logic to handle arrow key input
+            if (event.key === "ArrowLeft") {
+                player.move("left");
+            } else if (event.key === "ArrowRight") {
+                player.move("right");
+            } else if (event.key === "ArrowUp") {
+                player.move("up")
+            } else if (event.key === "ArrowDown") {
+                player.move("down")
+            }
         }
 
         // Event listener for keypresses
         document.addEventListener('keydown', handleKeyPress);
 
         // Initial setup
+        gameBoard[0][0] = "P";
         renderBoard();
         updatePlayerStats();
     </script>
